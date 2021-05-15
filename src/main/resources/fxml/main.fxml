@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.Cursor?>
+<AnchorPane prefHeight="700.0" prefWidth="850.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.Main">
+   <children>
+      <Pane layoutX="-10.0" prefHeight="700.0" prefWidth="532.0" style="-fx-background-color: #EEF2F5; -fx-background-radius: 20;">
+         <children>
+            <CheckBox fx:id="tag1" layoutX="31.0" layoutY="38.0" mnemonicParsing="false" text="Признак №1" textFill="#47596e">
+               <font>
+                  <Font size="24.0" />
+               </font>
+                <cursor>
+                    <Cursor fx:constant="HAND"/>
+                </cursor>
+            </CheckBox>
+             <CheckBox fx:id="tag2" layoutX="31.0" layoutY="88.0" mnemonicParsing="false" text="Признак №2" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag3" layoutX="31.0" layoutY="138.0" mnemonicParsing="false" text="Признак №3" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag4" layoutX="31.0" layoutY="188.0" mnemonicParsing="false" text="Признак №4" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag5" layoutX="31.0" layoutY="238.0" mnemonicParsing="false" text="Признак №5" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag6" layoutX="31.0" layoutY="288.0" mnemonicParsing="false" text="Признак №6" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag7" layoutX="31.0" layoutY="338.0" mnemonicParsing="false" text="Признак №7" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag8" layoutX="31.0" layoutY="388.0" mnemonicParsing="false" text="Признак №8" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag9" layoutX="31.0" layoutY="438.0" mnemonicParsing="false" text="Признак №9" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+             <CheckBox fx:id="tag10" layoutX="31.0" layoutY="488.0" mnemonicParsing="false" text="Признак №10" textFill="#47596e">
+                 <font>
+                     <Font size="24.0" />
+                 </font>
+                 <cursor>
+                     <Cursor fx:constant="HAND"/>
+                 </cursor>
+             </CheckBox>
+            <Button fx:id="analyse" layoutX="148.0" layoutY="574.0" mnemonicParsing="false" onAction="#doAnalyse" prefHeight="65.0" prefWidth="237.0" style="-fx-background-color: #8787FC; -fx-background-radius: 20;" text="Анализировать" textFill="WHITE">
+               <font>
+                  <Font size="24.0" />
+               </font>
+                <cursor>
+                    <Cursor fx:constant="HAND"/>
+                </cursor>
+            </Button>
+         </children>
+      </Pane>
+      <Pane layoutX="522.0" prefHeight="700.0" prefWidth="329.0" style="-fx-background-radius: 20;">
+         <children>
+            <Slider fx:id="alpha" layoutX="67.0" layoutY="178.0" prefHeight="29.0" prefWidth="195.0" style="-fx-control-inner-background: #8787FC;" />
+            <Label layoutX="117.0" layoutY="123.0" text="Альфа">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <Label layoutX="117.0" layoutY="293.0" text="Бетта">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <Label layoutX="117.0" layoutY="463.0" text="Гамма">
+               <font>
+                  <Font size="30.0" />
+               </font>
+            </Label>
+            <Slider fx:id="betta" layoutX="67.0" layoutY="348.0" prefHeight="29.0" prefWidth="195.0" style="-fx-control-inner-background: #8787FC;" />
+            <Slider fx:id="gamma" layoutX="67.0" layoutY="518.0" prefHeight="29.0" prefWidth="195.0" style="-fx-control-inner-background: #8787FC;" />
+            <TextField fx:id="alphaField" editable="false" layoutX="127.0" layoutY="213.0" prefHeight="25.0" prefWidth="87.0" promptText="0.0" />
+            <TextField fx:id="bettaField" editable="false" layoutX="127.0" layoutY="383.0" prefHeight="25.0" prefWidth="87.0" promptText="0.0" />
+            <TextField fx:id="gammaField" editable="false" layoutX="127.0" layoutY="553.0" prefHeight="25.0" prefWidth="87.0" promptText="0.0" />
+            <Button fx:id="closeButton" layoutX="283.0" mnemonicParsing="false" onAction="#closeWindow" prefHeight="45.0" prefWidth="46.0" style="-fx-background-color: #EEF2F5;" text="X" textFill="#47596e">
+               <font>
+                  <Font size="20.0" />
+               </font>
+                <cursor>
+                    <Cursor fx:constant="HAND"/>
+                </cursor>
+            </Button>
+         </children></Pane>
+   </children>
+</AnchorPane>

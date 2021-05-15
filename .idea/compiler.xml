@@ -9,5 +9,6 @@
         <module name="Kursovaya" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="9" />
   </component>
 </project>
