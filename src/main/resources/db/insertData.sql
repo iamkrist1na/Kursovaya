@@ -1,6 +1,6 @@
 --insert true scripts--
-INSERT INTO data VALUES ('1110011011', true);
 INSERT INTO data VALUES ('0000001000', true);
+INSERT INTO data VALUES ('1110011011', true);
 INSERT INTO data VALUES ('1101101100', true);
 INSERT INTO data VALUES ('1110011001', true);
 
