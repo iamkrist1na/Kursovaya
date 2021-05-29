@@ -4,7 +4,6 @@ import services.CalculateInformative;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class TransitionMatrix {
     private final String indicesX;
@@ -21,8 +20,21 @@ public class TransitionMatrix {
             }
             this.indicesX = indicesX;
             this.indicesValue = indicesValue;
-            informative = CalculateInformative.calculateInformative(matrix);
+            this.informative = CalculateInformative.calculateInformative(matrix);
         }
+    }
+    public TransitionMatrix(int[] transitionsXiXj, int[] transitionsXjXi, String indicesXiXj, String indicesValue) {
+        this.indicesX = indicesXiXj;
+        this.indicesValue = indicesValue;
+        List<Integer> secondMatrix = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            matrix.add(transitionsXiXj[i]);
+        }
+        for (int i = 0; i < 4; i++) {
+            secondMatrix.add(transitionsXiXj[i]);
+        }
+
+        this.informative = CalculateInformative.calculateInformativeForIndices(matrix, secondMatrix);
     }
 
     public List<Integer> getMatrix() {
