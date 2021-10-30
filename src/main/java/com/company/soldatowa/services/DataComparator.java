@@ -1,4 +1,4 @@
-package services;
+package com.company.soldatowa.services;
 
 import java.util.Comparator;
 

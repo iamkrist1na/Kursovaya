@@ -1,4 +1,4 @@
-package entities;
+package com.company.soldatowa.model;
 
 import java.util.Objects;
 

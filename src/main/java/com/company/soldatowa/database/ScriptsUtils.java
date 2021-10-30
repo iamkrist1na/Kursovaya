@@ -1,6 +1,6 @@
-package database;
+package com.company.soldatowa.database;
 
-import config.application.ApplicationConfig;
+import com.company.soldatowa.config.application.ApplicationConfig;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,12 +15,12 @@ public final class ScriptsUtils {
     public static List<String> readAllLines() throws IOException {
 
         return Files.readAllLines(
-                Paths.get(ApplicationConfig.pathToScripts), StandardCharsets.UTF_8);
+                Paths.get(ApplicationConfig.pathToUpdateScript), StandardCharsets.UTF_8);
     }
 
     public static void writeNewLine(String data, String flag) throws IOException {
         String row = "INSERT INTO data VALUES ('" + data + "', " + flag + ");";
-        Files.write(Paths.get(ApplicationConfig.pathToScripts), row.getBytes(StandardCharsets.UTF_8));
+        Files.write(Paths.get(ApplicationConfig.pathToUpdateScript), row.getBytes(StandardCharsets.UTF_8));
         Logger.getGlobal().log(Level.INFO, "Added row: [" + data + ", " + flag + "]");
     }
 
@@ -28,7 +28,7 @@ public final class ScriptsUtils {
         List<String> lines = readAllLines();
         String row = "INSERT INTO data VALUES ('" + data + "', " + flag + ");";
         lines.remove(row);
-        Files.write(Paths.get(ApplicationConfig.pathToScripts), lines);
+        Files.write(Paths.get(ApplicationConfig.pathToUpdateScript), lines);
         Logger.getGlobal().log(Level.INFO, "Deleted row: [" + data + ", " + flag + "]");
     }
 }

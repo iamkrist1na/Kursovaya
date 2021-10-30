@@ -1,4 +1,4 @@
-package config.database;
+package com.company.soldatowa.config.database;
 
 public final class DatabaseConfig {
     public final static String[] DATABASE_CREDIT = new String[]

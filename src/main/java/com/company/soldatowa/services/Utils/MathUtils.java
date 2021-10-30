@@ -1,4 +1,4 @@
-package services.Utils;
+package com.company.soldatowa.services.Utils;
 
 public class MathUtils {
     // HINT: log2(x) = log10(x) / log10(2)

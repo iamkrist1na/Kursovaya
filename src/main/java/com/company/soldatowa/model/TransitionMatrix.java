@@ -1,6 +1,6 @@
-package entities;
+package com.company.soldatowa.model;
 
-import services.CalculateInformative;
+import com.company.soldatowa.services.CalculateInformative;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class TransitionMatrix {
             }
             this.indicesX = indicesX;
             this.indicesValue = indicesValue;
-            this.informative = CalculateInformative.calculateInformative(matrix);
+            this.informative = CalculateInformative.calculateInformative(matrix, false);
         }
     }
     public TransitionMatrix(int[] transitionsXiXj, int[] transitionsXjXi, String indicesXiXj, String indicesValue) {

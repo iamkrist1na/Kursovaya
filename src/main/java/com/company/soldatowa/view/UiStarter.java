@@ -1,6 +1,6 @@
-package view;
+package com.company.soldatowa.view;
 
-import config.application.ApplicationConfig;
+import com.company.soldatowa.config.application.ApplicationConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

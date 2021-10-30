@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.Cursor?>
-<AnchorPane prefHeight="700.0" prefWidth="850.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.Main">
+<AnchorPane prefHeight="700.0" prefWidth="850.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.soldatowa.controllers.Main">
    <children>
       <Pane layoutX="-10.0" prefHeight="700.0" prefWidth="532.0" style="-fx-background-color: #EEF2F5; -fx-background-radius: 20;">
          <children>
@@ -94,7 +94,7 @@
                      <Cursor fx:constant="HAND"/>
                  </cursor>
              </CheckBox>
-            <Button fx:id="analyse" layoutX="148.0" layoutY="574.0" mnemonicParsing="false" onAction="#doAnalyse" prefHeight="65.0" prefWidth="237.0" style="-fx-background-color: #8787FC; -fx-background-radius: 20;" text="Анализировать" textFill="WHITE">
+            <Button fx:id="analyse" layoutX="148.0" layoutY="574.0" mnemonicParsing="false" prefHeight="65.0" prefWidth="237.0" style="-fx-background-color: #8787FC; -fx-background-radius: 20;" text="Анализировать" textFill="WHITE">
                <font>
                   <Font size="24.0" />
                </font>
