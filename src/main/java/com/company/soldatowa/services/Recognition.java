@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Анализ введенных пользователем данных:
  */
-public final class Recognition {
+public abstract class Recognition {
 
     private static Map<String, String> indicesList = new HashMap<>();
     private static String data;
@@ -40,14 +40,8 @@ public final class Recognition {
                 return "0";
             } else throw new RuntimeException("Something goes wrong");
         } else {
-            return smartRecognition();
+            return doSmartRecognition();
         }
-    }
-
-    private static String smartRecognition() {
-        String recognitionResult = doSmartRecognition();
-        System.out.println(recognitionResult);
-        return recognitionResult;
     }
 
     private static String doSmartRecognition() {
