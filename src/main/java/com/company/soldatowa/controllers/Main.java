@@ -86,7 +86,7 @@ public class Main {
     public void doAnalyse() {
         loadCheckBoxList();
         String data = parseTags();
-        boolean recognition = Recognition.recognition(data);
+        String recognition = Recognition.recognition(data);
     }
 
     private String parseTags() {

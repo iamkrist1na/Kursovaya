@@ -47,4 +47,19 @@ public abstract class Parser {
         }
         return result.toString();
     }
+
+    public static String parseIsTrueColumnDataToBinaryValue() {
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> isTrueData = DatabaseUtils.selectIsTrueData();
+        isTrueData.forEach(booleanValue -> {
+            if (booleanValue.equals("TRUE")) {
+                stringBuilder.append("1");
+            }
+            else if (booleanValue.equals("FALSE")) {
+                stringBuilder.append("0");
+            }
+            else throw new RuntimeException("Wrong value for 'isTrue' column");
+        });
+        return stringBuilder.toString();
+    }
 }

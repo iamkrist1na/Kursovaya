@@ -6,10 +6,10 @@ import com.company.soldatowa.database.DatabaseUtils;
 import com.company.soldatowa.model.Metric;
 import com.company.soldatowa.model.TransitionMatrix;
 import com.company.soldatowa.model.TransitionMatrixForComplexInd;
-import javafx.scene.control.Slider;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -19,9 +19,12 @@ import java.util.stream.Collectors;
 public final class Recognition {
 
     private static Map<String, String> indicesList = new HashMap<>();
+    private static String data;
+    private static Map<String, Map<String, String>> newSpace = new HashMap<>();
 
-    public static boolean recognition(String data) {
-        indicesList = createIndices();
+    public static String recognition(String data) {
+        Recognition.indicesList = createIndices();
+        Recognition.data = data;
         DataComparator dataComparator = new DataComparator();
         List<String> allData = DatabaseUtils.selectAllData();
 
@@ -29,13 +32,160 @@ public final class Recognition {
                 .filter(row -> dataComparator.compare(row.split("/")[0], data) == 0)
                 .findFirst();
 
-        return equalRow.map(s -> s.split("/")[1].equals("TRUE")).orElseGet(Recognition::smartRecognition);
-
+        if (equalRow.isPresent()) {
+            String result = equalRow.get().split("/")[1];
+            if (result.equals("TRUE")) {
+                return "1";
+            } else if (result.equals("FALSE")) {
+                return "0";
+            } else throw new RuntimeException("Something goes wrong");
+        } else {
+            return smartRecognition();
+        }
     }
 
-    private static boolean smartRecognition() {
-        System.out.println(filteringByBetta());
-        return true;
+    private static String smartRecognition() {
+        String recognitionResult = doSmartRecognition();
+        System.out.println(recognitionResult);
+        return recognitionResult;
+    }
+
+    private static String doSmartRecognition() {
+        String userData = bindingUserData();
+        List<String> recognitionTable = createRecognitionTable();
+        String isTrueColumnData = Parser.parseIsTrueColumnDataToBinaryValue();
+        List<String> matches = recognitionTable.stream().filter(value -> value.equals(userData)).collect(Collectors.toList());
+        if (matches.size() == 1) {
+            int index = recognitionTable.indexOf(matches.get(0));
+            char binaryBooleanValue = isTrueColumnData.charAt(index);
+            if (binaryBooleanValue == '0') {
+                return "0";
+            } else if (binaryBooleanValue == '1') {
+                return "1";
+            } else {
+                throw new RuntimeException("Something goes wrong");
+            }
+        } else if (matches.size() > 1) {
+            List<Integer> indexes = new ArrayList<>();
+            matches.forEach(match -> indexes.add(recognitionTable.indexOf(match)));
+            int trueCount = 0;
+            int falseCount = 0;
+            for (int index : indexes) {
+                if (isTrueColumnData.charAt(index) == '0') falseCount++;
+                else if (isTrueColumnData.charAt(index) == '1') trueCount++;
+                else throw new RuntimeException("Something goes wrong");
+            }
+            if (trueCount > falseCount) return "1";
+            else if (falseCount > trueCount) return "0";
+            else return "-";
+        } else {
+            AtomicInteger trueCount = new AtomicInteger();
+            AtomicInteger falseCount = new AtomicInteger();
+            for (int ch = 0; ch < userData.length(); ch++) {
+                if (userData.charAt(ch) != '-') {
+                    int finalCh = ch;
+                    matches.forEach(match -> {
+                        if (match.charAt(finalCh) == userData.charAt(finalCh)) {
+                            if (isTrueColumnData.charAt(finalCh) == '0') {
+                                falseCount.getAndIncrement();
+                            } else if (isTrueColumnData.charAt(finalCh) == '1') {
+                                trueCount.getAndIncrement();
+                            } else {
+                                throw new RuntimeException("Something goes wrong");
+                            }
+                        }
+                    });
+                }
+            }
+            if (trueCount.get() > falseCount.get()) {
+                return "1";
+            } else if (falseCount.get() > trueCount.get()) {
+                return "0";
+            } else {
+                return "-";
+            }
+        }
+    }
+
+    private static List<String> createRecognitionTable() {
+        List<String> resultList = new ArrayList<>();
+        Map<String, String> convertedSpace = convertNewSpace();
+        Collection<String> values = convertedSpace.values();
+        for (int i = 0; i < values.size(); i++) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String value : values) {
+                stringBuilder.append(value.charAt(i));
+            }
+            resultList.add(stringBuilder.toString());
+        }
+        return resultList;
+    }
+
+    private static Map<String, String> convertNewSpace() {
+        Map<String, String> convertedSpace = new HashMap<>();
+        Recognition.newSpace.forEach((complexIndAlias, transitionsMap) -> {
+            StringBuilder newValue = new StringBuilder();
+            String value = Parser.getBinaryValueForComplexInd(complexIndAlias);
+            String[] split = value.split(",");
+            for (String s : split) {
+                newValue.append(transitionsMap.get(s));
+            }
+            convertedSpace.put(complexIndAlias, newValue.toString());
+        });
+        return convertedSpace;
+    }
+
+    private static String bindingUserData() {
+        StringBuilder resultBuilder = new StringBuilder();
+        Map<String, Map<String, String>> newSpace = transitionToNewSpace();
+        Recognition.newSpace = newSpace;
+        newSpace.forEach((complexIndAlias, transitionsMap) -> {
+            String[] split = complexIndAlias.split("\\|");
+            int[] indexes = new int[split.length];
+            for (int i = 0; i < split.length; i++) {
+                String s = split[i].replaceAll("X", "");
+                indexes[i] = Integer.parseInt(s) - 1;
+            }
+            StringBuilder userValueBuilder = new StringBuilder();
+            for (int index : indexes) {
+                userValueBuilder.append(Recognition.data.charAt(index));
+            }
+            String valueFromTransitionMap = transitionsMap.get(userValueBuilder.toString());
+            resultBuilder.append(valueFromTransitionMap);
+        });
+        return resultBuilder.toString();
+    }
+
+    private static Map<String, Map<String, String>> transitionToNewSpace() {
+        Map<String, Map<String, String>> newSpace = new HashMap<>();
+        List<TransitionMatrixForComplexInd> matrices = filteringByBetta();
+        matrices.forEach(matrix -> {
+            newSpace.put(matrix.getComplexIndices(), new HashMap<>());
+            List<Integer> matrix_ = matrix.getMatrix();
+            List<String> transitionAlias = matrix_.size() == 8
+                    ? List.of("00", "01", "10", "11")
+                    : List.of("000", "001", "010", "011", "100", "101", "110", "111");
+            for (int i = 0; i < matrix_.size() - 1; i += 2) {
+                int firstValue = matrix_.get(i);
+                int secondValue = matrix_.get(i + 1);
+                if (firstValue > secondValue) {
+                    if ((firstValue - secondValue) >= Main.getGammaValue()) {
+                        newSpace.get(matrix.getComplexIndices()).put(transitionAlias.get(i / 2), "1");
+                    } else {
+                        newSpace.get(matrix.getComplexIndices()).put(transitionAlias.get(i / 2), "0");
+                    }
+                } else if (firstValue < secondValue) {
+                    if ((secondValue - firstValue) >= Main.getGammaValue()) {
+                        newSpace.get(matrix.getComplexIndices()).put(transitionAlias.get(i / 2), "1");
+                    } else {
+                        newSpace.get(matrix.getComplexIndices()).put(transitionAlias.get(i / 2), "0");
+                    }
+                } else {
+                    newSpace.get(matrix.getComplexIndices()).put(transitionAlias.get(i / 2), "-");
+                }
+            }
+        });
+        return newSpace;
     }
 
     private static List<TransitionMatrixForComplexInd> filteringByBetta() {
@@ -309,6 +459,7 @@ public final class Recognition {
                     }
                     break;
                 }
+                case "11":
                 case "011": {
                     switch (isTrueData.get(i)) {
                         case "TRUE": {
