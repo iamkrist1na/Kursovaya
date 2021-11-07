@@ -18,13 +18,11 @@ import java.util.stream.Collectors;
  */
 public abstract class Recognition {
 
-    private static Map<String, String> indicesList = new HashMap<>();
+    private static Map<String, String> indicesList = new LinkedHashMap<>();
     private static String data;
-    private static Map<String, Map<String, String>> newSpace = new HashMap<>();
+    private static Map<String, Map<String, String>> newSpace = new LinkedHashMap<>();
 
     public static String recognition(String data) {
-        Recognition.indicesList = createIndices();
-        Recognition.data = data;
         DataComparator dataComparator = new DataComparator();
         List<String> allData = DatabaseUtils.selectAllData();
 
@@ -40,6 +38,9 @@ public abstract class Recognition {
                 return "0";
             } else throw new RuntimeException("Something goes wrong");
         } else {
+            Recognition.indicesList = createIndices();
+            Recognition.data = data;
+            Recognition.newSpace = new LinkedHashMap<>();
             return doSmartRecognition();
         }
     }
@@ -105,7 +106,10 @@ public abstract class Recognition {
         List<String> resultList = new ArrayList<>();
         Map<String, String> convertedSpace = convertNewSpace();
         Collection<String> values = convertedSpace.values();
-        for (int i = 0; i < values.size(); i++) {
+        if (values.size() < 1) {
+            throw new RuntimeException("Converted space is empty. Try to set alpha value less");
+        }
+        for (int i = 0; i < values.stream().findFirst().get().length(); i++) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String value : values) {
                 stringBuilder.append(value.charAt(i));
@@ -116,7 +120,7 @@ public abstract class Recognition {
     }
 
     private static Map<String, String> convertNewSpace() {
-        Map<String, String> convertedSpace = new HashMap<>();
+        Map<String, String> convertedSpace = new LinkedHashMap<>();
         Recognition.newSpace.forEach((complexIndAlias, transitionsMap) -> {
             StringBuilder newValue = new StringBuilder();
             String value = Parser.getBinaryValueForComplexInd(complexIndAlias);
@@ -151,10 +155,10 @@ public abstract class Recognition {
     }
 
     private static Map<String, Map<String, String>> transitionToNewSpace() {
-        Map<String, Map<String, String>> newSpace = new HashMap<>();
         List<TransitionMatrixForComplexInd> matrices = filteringByBetta();
+        Map<String, Map<String, String>> newSpace = new LinkedHashMap<>();
         matrices.forEach(matrix -> {
-            newSpace.put(matrix.getComplexIndices(), new HashMap<>());
+            newSpace.put(matrix.getComplexIndices(), new LinkedHashMap<>());
             List<Integer> matrix_ = matrix.getMatrix();
             List<String> transitionAlias = matrix_.size() == 8
                     ? List.of("00", "01", "10", "11")
@@ -209,56 +213,48 @@ public abstract class Recognition {
     }
 
     private static void createTripleComplexIndices(List<List<String>> clusters, Set<String> complexIndices) {
-        clusters.forEach(cluster -> {
-            cluster.forEach(simpleInd -> {
-                cluster.forEach(otherSimpleInd -> {
-                    var simpleIndices = new Object() {
-                        String binarySimpleInd = "";
-                        String reversedBinarySimpleInd = "";
-                    };
-                    if (!Objects.equals(simpleInd, otherSimpleInd)) {
-                        simpleIndices.binarySimpleInd = simpleInd + "|" + otherSimpleInd;
-                        simpleIndices.reversedBinarySimpleInd = otherSimpleInd + "|" + simpleInd;
-                    }
-                    clusters.forEach(otherCluster -> {
-                        if (cluster != otherCluster) {
-                            otherCluster.forEach(simpleIndInOtherCluster -> {
-                                String tripleComplexInd1 = simpleIndices.binarySimpleInd + "|" + simpleIndInOtherCluster;
-                                String tripleComplexInd2 = simpleIndInOtherCluster + "|" + simpleIndices.binarySimpleInd;
-                                String tripleComplexInd3 = simpleIndices.reversedBinarySimpleInd + "|" + simpleIndInOtherCluster;
-                                String tripleComplexInd4 = simpleIndInOtherCluster + "|" + simpleIndices.reversedBinarySimpleInd;
-                                if (!simpleIndices.binarySimpleInd.isEmpty() &&
-                                        !simpleIndices.reversedBinarySimpleInd.isEmpty() &&
-                                        !complexIndices.contains(tripleComplexInd1) &&
-                                        !complexIndices.contains(tripleComplexInd2) &&
-                                        !complexIndices.contains(tripleComplexInd3) &&
-                                        !complexIndices.contains(tripleComplexInd4)) {
-                                    complexIndices.add(tripleComplexInd1);
-                                }
-                            });
+        clusters.forEach(cluster -> cluster.forEach(simpleInd -> cluster.forEach(otherSimpleInd -> {
+            var simpleIndices = new Object() {
+                String binarySimpleInd = "";
+                String reversedBinarySimpleInd = "";
+            };
+            if (!Objects.equals(simpleInd, otherSimpleInd)) {
+                simpleIndices.binarySimpleInd = simpleInd + "|" + otherSimpleInd;
+                simpleIndices.reversedBinarySimpleInd = otherSimpleInd + "|" + simpleInd;
+            }
+            clusters.forEach(otherCluster -> {
+                if (cluster != otherCluster) {
+                    otherCluster.forEach(simpleIndInOtherCluster -> {
+                        String tripleComplexInd1 = simpleIndices.binarySimpleInd + "|" + simpleIndInOtherCluster;
+                        String tripleComplexInd2 = simpleIndInOtherCluster + "|" + simpleIndices.binarySimpleInd;
+                        String tripleComplexInd3 = simpleIndices.reversedBinarySimpleInd + "|" + simpleIndInOtherCluster;
+                        String tripleComplexInd4 = simpleIndInOtherCluster + "|" + simpleIndices.reversedBinarySimpleInd;
+                        if (!simpleIndices.binarySimpleInd.isEmpty() &&
+                                !simpleIndices.reversedBinarySimpleInd.isEmpty() &&
+                                !complexIndices.contains(tripleComplexInd1) &&
+                                !complexIndices.contains(tripleComplexInd2) &&
+                                !complexIndices.contains(tripleComplexInd3) &&
+                                !complexIndices.contains(tripleComplexInd4)) {
+                            complexIndices.add(tripleComplexInd1);
                         }
                     });
-                });
+                }
             });
-        });
+        })));
     }
 
     private static void createBinaryComplexIndices(List<List<String>> clusters, Set<String> complexIndices) {
-        clusters.forEach(cluster -> {
-            cluster.forEach(simpleInd -> {
-                clusters.forEach(otherCluster -> {
-                    if (cluster != otherCluster) {
-                        otherCluster.forEach(otherSimpleInd -> {
-                            String complexInd = simpleInd + "|" + otherSimpleInd;
-                            String reversedComplexInd = otherSimpleInd + "|" + simpleInd;
-                            if (!complexIndices.contains(complexInd) && !complexIndices.contains(reversedComplexInd)) {
-                                complexIndices.add(complexInd);
-                            }
-                        });
+        clusters.forEach(cluster -> cluster.forEach(simpleInd -> clusters.forEach(otherCluster -> {
+            if (cluster != otherCluster) {
+                otherCluster.forEach(otherSimpleInd -> {
+                    String complexInd = simpleInd + "|" + otherSimpleInd;
+                    String reversedComplexInd = otherSimpleInd + "|" + simpleInd;
+                    if (!complexIndices.contains(complexInd) && !complexIndices.contains(reversedComplexInd)) {
+                        complexIndices.add(complexInd);
                     }
                 });
-            });
-        });
+            }
+        })));
     }
 
     private static List<List<String>> clustering(double minMetricPercent) {
@@ -327,28 +323,24 @@ public abstract class Recognition {
         List<TransitionMatrix> matrices = filteringIndicesByAlpha();
         List<TransitionMatrix> transitionMatrices = new ArrayList<>();
 
-        matrices.forEach(matrix1 -> {
-            matrices.forEach(matrix2 -> {
-                if (!matrix1.getIndicesX().equals(matrix2.getIndicesX())) {
-                    transitionMatrices.add(createTransitionMatrix(matrix1.getIndicesValue(), matrix2.getIndicesValue(),
-                            matrix1.getIndicesX() + "|" + matrix2.getIndicesX()));
-                }
-            });
-        });
+        matrices.forEach(matrix1 -> matrices.forEach(matrix2 -> {
+            if (!matrix1.getIndicesX().equals(matrix2.getIndicesX())) {
+                transitionMatrices.add(createTransitionMatrix(matrix1.getIndicesValue(), matrix2.getIndicesValue(),
+                        matrix1.getIndicesX() + "|" + matrix2.getIndicesX()));
+            }
+        }));
 
-        transitionMatrices.forEach(transitionMatrix1 -> {
-            transitionMatrices.forEach(transitionMatrix2 -> {
-                String[] indicesNumber1 = transitionMatrix1.getIndicesX().split("\\|");
-                String[] indicesNumber2 = transitionMatrix2.getIndicesX().split("\\|");
-                if (indicesNumber1[0].equals(indicesNumber2[1]) && indicesNumber1[1].equals(indicesNumber2[0])) {
-                    double metric = (double) 1 / 2 * (transitionMatrix1.getInformative() + transitionMatrix2.getInformative());
-                    Metric m = new Metric(transitionMatrix2.getIndicesX(), metric);
-                    if (!metrics.contains(m)) {
-                        metrics.add(m);
-                    }
+        transitionMatrices.forEach(transitionMatrix1 -> transitionMatrices.forEach(transitionMatrix2 -> {
+            String[] indicesNumber1 = transitionMatrix1.getIndicesX().split("\\|");
+            String[] indicesNumber2 = transitionMatrix2.getIndicesX().split("\\|");
+            if (indicesNumber1[0].equals(indicesNumber2[1]) && indicesNumber1[1].equals(indicesNumber2[0])) {
+                double metric = (double) 1 / 2 * (transitionMatrix1.getInformative() + transitionMatrix2.getInformative());
+                Metric m = new Metric(transitionMatrix2.getIndicesX(), metric);
+                if (!metrics.contains(m)) {
+                    metrics.add(m);
                 }
-            });
-        });
+            }
+        }));
 
         return metrics;
     }
@@ -363,9 +355,7 @@ public abstract class Recognition {
                 .filter(matrix -> matrix.getInformative() > alphaPercent)
                 .collect(Collectors.toList());
 
-        filteredList.forEach(matrix -> {
-            map.put(matrix.getIndicesX(), matrix.getIndicesValue());
-        });
+        filteredList.forEach(matrix -> map.put(matrix.getIndicesX(), matrix.getIndicesValue()));
 
         indicesList = map;
 
