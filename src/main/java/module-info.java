@@ -13,5 +13,6 @@ module com.company.soldatowa {
 
     opens com.company.soldatowa.view to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
     opens com.company.soldatowa.controllers to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
+    opens com.company.soldatowa.config.application to javafx.fxml, javafx.base, javafx.controls, javafx.graphics;
 
 }

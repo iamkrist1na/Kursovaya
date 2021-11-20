@@ -40,7 +40,7 @@ public class UiStarter extends Application {
 
         stage.setFullScreen(false);
         stage.setResizable(false);
-        stage.setTitle("Kursovaya");
+        stage.setTitle("Дипломная работа");
         stage.setScene(scene);
         stage.setIconified(false);
         scene.setFill(Color.TRANSPARENT);
